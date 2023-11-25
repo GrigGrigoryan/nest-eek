@@ -57,89 +57,70 @@ export class PaymentController {
     return this.paymentService.getPaymentDetails(paymentId);
   }
 
-  // @Post('init')
-  // @Roles(RoleEnum.CLIENT)
-  // @HttpCode(HttpStatus.CREATED)
-  // async initPayment(
-  //   @Request() { user }: { user: User },
-  //   @Body() initPaymentDto: InitPaymentDto,
-  // ) {
-  //   const { flowStateId, price } = initPaymentDto;
-  //
-  //   const flowState = await this.flowStateService.getFlowStateWithUser(
-  //     flowStateId,
-  //   );
-  //   if (!flowState) {
-  //     throw new NotFound('flow_state_not_found');
-  //   }
-  //   if (flowState.user.id !== user.id) {
-  //     throw new Forbidden('flow_state_no_access');
-  //   }
-  //
-  //   const incompleteOrder = flowState.orders.find(
-  //     (order: Order) =>
-  //       order.status === OrderStatus.PENDING &&
-  //       order.transactions[0]?.paymentId,
-  //   );
-  //
-  //   if (incompleteOrder) {
-  //     const paymentId = incompleteOrder?.transactions[0]?.paymentId;
-  //
-  //     const paymentUrl = this.configService.get<string>('payment.paymentUrl');
-  //     const language = PaymentLanguage.RUSSIAN;
-  //
-  //     const url = `${paymentUrl}?id=${paymentId}&lang=${language}`;
-  //     return { url, orderId: incompleteOrder.id };
-  //   }
-  //
-  //   let transaction: Transaction;
-  //   let order: Order;
-  //   const providerOrderId =
-  //     await this.transactionService.generateProviderOrderId();
-  //
-  //   await this.entityManager.transaction(async (transactionalEntityManager) => {
-  //     // creating initial order and transaction before payment init
-  //     transaction = transactionalEntityManager.create(Transaction, {
-  //       status: TransactionStatus.PENDING,
-  //       type: TransactionType.INIT,
-  //       providerOrderId,
-  //       amount: price,
-  //       user,
-  //     });
-  //     await transactionalEntityManager.save(Transaction, transaction);
-  //
-  //     order = transactionalEntityManager.create(Order, {
-  //       status: OrderStatus.PENDING,
-  //       price,
-  //       user,
-  //       transactions: [transaction],
-  //       flowState,
-  //     });
-  //     await transactionalEntityManager.save(Order, order);
-  //   });
-  //
-  //   const initPaymentResponse = await this.paymentService.initPayment({
-  //     OrderID: providerOrderId,
-  //     Amount: price,
-  //   });
-  //
-  //   const url = await this.paymentService.handlePaymentInit(
-  //     initPaymentResponse,
-  //     order,
-  //     transaction,
-  //   );
-  //   if (!url) {
-  //     return {
-  //       orderId: order.id,
-  //       message: 'Payment Failed, please retry.',
-  //     };
-  //   }
-  //
-  //   return { url, orderId: order.id };
-  // }
-
-  @Post('retry')
+  @Post('init')
   @Roles(RoleEnum.CLIENT)
+  @HttpCode(HttpStatus.CREATED)
+  async initPayment(@Request() { user }: { user: User }) {
+    const price = 10;
+    // const incompleteOrder = await this.orderService.getOrder()
+
+    // if (incompleteOrder) {
+    //   const paymentId = incompleteOrder?.transactions[0]?.paymentId;
+    //
+    //   const paymentUrl = this.configService.get<string>('payment.paymentUrl');
+    //   const language = PaymentLanguage.RUSSIAN;
+    //
+    //   const url = `${paymentUrl}?id=${paymentId}&lang=${language}`;
+    //   return { url, orderId: incompleteOrder.id };
+    // }
+
+    let transaction: Transaction;
+    let order: Order;
+    const providerOrderId =
+      await this.transactionService.generateProviderOrderId();
+
+    await this.entityManager.transaction(async (transactionalEntityManager) => {
+      // creating initial order and transaction before payment init
+      transaction = transactionalEntityManager.create(Transaction, {
+        status: TransactionStatus.PENDING,
+        type: TransactionType.INIT,
+        providerOrderId,
+        amount: price,
+        user,
+      });
+      await transactionalEntityManager.save(Transaction, transaction);
+
+      order = transactionalEntityManager.create(Order, {
+        status: OrderStatus.PENDING,
+        price,
+        user,
+        transactions: [transaction],
+      });
+      await transactionalEntityManager.save(Order, order);
+    });
+
+    const initPaymentResponse = await this.paymentService.initPayment({
+      OrderID: providerOrderId,
+      Amount: price,
+    });
+
+    const url = await this.paymentService.handlePaymentInit(
+      initPaymentResponse,
+      order,
+      transaction,
+    );
+    if (!url) {
+      return {
+        orderId: order.id,
+        message: 'Payment Failed, please retry.',
+      };
+    }
+
+    return { url, orderId: order.id };
+  }
+
+  @Roles(RoleEnum.CLIENT)
+  @Post('retry')
   @HttpCode(HttpStatus.CREATED)
   async retryPayment(
     @Request() { user }: { user: User },

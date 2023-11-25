@@ -1,7 +1,7 @@
 export enum RoleEnum {
   SUPER_ADMIN = 'superAdmin',
   ADMIN = 'admin',
-  MANAGER = 'communicationManager', // chats, mails, communication, work, problems etc.
+  MANAGER = 'manager', // chats, mails, communication, work, problems etc.
   CLIENT = 'client',
   CONTENT_WRITER = 'contentWriter',
   OPERATOR = 'operator',

@@ -44,18 +44,6 @@ export class BaseService {
       .filter((column) => !excludedColumns.select.includes(column))
       .map((column) => `${entityName}.${column}`);
 
-    // add relations and check if user has access
-    if (entityName === 'orderProcess') {
-      qb.leftJoin(`${entityName}.users`, 'user');
-
-      columnsToSelect.push(
-        'user.id',
-        'user.firstName',
-        'user.lastName',
-        'user.lastName',
-      );
-    }
-
     qb.andWhere(
       new Brackets((expression) => {
         if (query.startDate || query.endDate) {
@@ -74,10 +62,7 @@ export class BaseService {
             }),
           );
         }
-        if (
-          entityName === 'orderProcess' &&
-          query.roleName === RoleEnum.ADMIN
-        ) {
+        if (query.roleName === RoleEnum.ADMIN) {
           expression.orWhere(`user.id = :userId`, {
             userId: Base._currentUserId,
           });
