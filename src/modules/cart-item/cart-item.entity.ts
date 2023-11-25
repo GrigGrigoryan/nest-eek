@@ -1,19 +1,19 @@
 import { Base } from '../base/base.entity';
-import { Shoe } from '../shoe/shoe.entity';
+import { shoes } from '../shoes/shoes.entity';
 import { Cart } from '../cart/cart.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
-import { ShoePin } from '../shoe-pin/shoe-pin.entity';
+import { Accessory } from '../accessory/accessory.entity';
 
 @Entity('cart_item')
 export class CartItem extends Base {
   @Column()
   quantity: number;
 
-  @ManyToOne(() => Shoe, (shoe) => shoe.cartItems)
-  shoe: Shoe;
+  @ManyToOne(() => shoes, (shoes) => shoes.cartItems)
+  shoes: shoes;
 
-  @ManyToOne(() => ShoePin, (shoePin) => shoePin.cartItems)
-  shoePin: ShoePin;
+  @ManyToOne(() => Accessory, (accessory) => accessory.cartItems)
+  accessory: Accessory;
 
   @ManyToOne(() => Cart, (cart) => cart.items)
   cart: Cart;

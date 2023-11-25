@@ -4,8 +4,8 @@ import { CartItem } from '../cart-item/cart-item.entity';
 import { Category } from '../category/category.entity';
 import { Image } from '../image/image.entity';
 
-@Entity('shoe_pin')
-export class ShoePin extends Base {
+@Entity('accessory')
+export class Accessory extends Base {
   @Column()
   name: string;
 
@@ -15,12 +15,12 @@ export class ShoePin extends Base {
   @Column()
   price: string;
 
-  @OneToMany(() => Image, (image) => image.shoePin)
+  @OneToMany(() => Image, (image) => image.accessory)
   images: Image[];
 
-  @OneToMany(() => CartItem, (cartItem) => cartItem.shoePin)
+  @OneToMany(() => CartItem, (cartItem) => cartItem.accessory)
   cartItems: CartItem[];
 
-  @ManyToOne(() => Category, (category) => category.shoePins)
+  @ManyToOne(() => Category, (category) => category.accessories)
   category: Category[];
 }
