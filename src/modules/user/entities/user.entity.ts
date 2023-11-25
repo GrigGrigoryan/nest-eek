@@ -16,6 +16,7 @@ import { Base } from '../../base/base.entity';
 import { Role } from '../../role/role.entity';
 import { Exclude, Expose } from 'class-transformer';
 import { UserVerify } from './user-verify.entity';
+import { Cart } from '../../cart/cart.entity';
 
 @Entity('user')
 export class User extends Base {
@@ -59,6 +60,10 @@ export class User extends Base {
     // eager: true,
   })
   role?: Role | null;
+
+  @OneToOne(() => Cart, (cart) => cart.user)
+  @JoinColumn()
+  cart: Cart;
 
   @OneToMany(() => Order, (order) => order.user)
   orders: Order[];

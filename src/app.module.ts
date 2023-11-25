@@ -30,6 +30,12 @@ import { NotificationTemplateSeedService } from './database/seeds/notification-t
 import { NotificationTemplateSeedModule } from './database/seeds/notification-template/notification-template-seed.module';
 import { TransactionModule } from './modules/transaction/transaction.module';
 import { LoggingInterceptor } from './interceptors/logging.interceptor';
+import { ShoeModule } from './modules/shoe/shoe.module';
+import { ShoePinModule } from './modules/shoe-pin/shoe-pin.module';
+import { CategoryModule } from './modules/category/category.module';
+import { CartModule } from './modules/cart/cart.module';
+import { CartItemModule } from './modules/cart-item/cart-item.module';
+import { ImageModule } from './modules/image/image.module';
 import throttlerConfig from './config/throttler.config';
 
 @Module({
@@ -78,6 +84,12 @@ import throttlerConfig from './config/throttler.config';
     NotificationTemplateModule,
     NotificationTemplateSeedModule,
     TransactionModule,
+    ShoeModule,
+    ShoePinModule,
+    CategoryModule,
+    CartModule,
+    CartItemModule,
+    ImageModule,
   ],
   providers: [
     // {
