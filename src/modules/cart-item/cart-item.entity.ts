@@ -1,5 +1,5 @@
 import { Base } from '../base/base.entity';
-import { shoes } from '../shoes/shoes.entity';
+import { Shoes } from '../shoes/shoes.entity';
 import { Cart } from '../cart/cart.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Accessory } from '../accessory/accessory.entity';
@@ -9,8 +9,8 @@ export class CartItem extends Base {
   @Column()
   quantity: number;
 
-  @ManyToOne(() => shoes, (shoes) => shoes.cartItems)
-  shoes: shoes;
+  @ManyToOne(() => Shoes, (shoes) => shoes.cartItems)
+  shoes: Shoes;
 
   @ManyToOne(() => Accessory, (accessory) => accessory.cartItems)
   accessory: Accessory;

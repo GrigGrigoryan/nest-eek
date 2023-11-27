@@ -5,7 +5,7 @@ import { Category } from '../category/category.entity';
 import { Image } from '../image/image.entity';
 
 @Entity('shoes')
-export class shoes extends Base {
+export class Shoes extends Base {
   @Column()
   size: string;
 
