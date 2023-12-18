@@ -30,14 +30,4 @@ export class InitPaymentResponseDto {
   ResponseMessage: string;
 }
 
-export class InitPaymentDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  price: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  flowStateId: string;
-}
+export class InitPaymentDto {}

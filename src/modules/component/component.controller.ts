@@ -11,56 +11,56 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
+import { ComponentService } from './component.service';
+import { CreateComponentDto } from './dto/create-component.dto';
+import { UpdateComponentDto } from './dto/update-component.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAccessGuard } from '../auth/guards/jwt-access.guard';
 import { RoleGuard } from '../role/role.guard';
 import { Throttle } from '@nestjs/throttler';
 import { ParamUUID } from '../../decorators/ParamUUID';
-import { CreateCartItemDto } from './dto/create-cart-item.dto';
-import { UpdateCartItemDto } from './dto/update-cart-item.dto';
-import { ListCartItemQueryDto } from './dto/list-cart-item.query.dto';
-import { CartItemService } from './cart-item.service';
+import { ListComponentQueryDto } from './dto/list-component.query.dto';
 
 @ApiBearerAuth()
-@ApiTags('CartItem Item')
+@ApiTags('Component')
 @UseGuards(JwtAccessGuard, RoleGuard)
 @Controller({
-  path: 'cart-item',
+  path: 'component',
 })
-export class CartItemController {
-  constructor(private readonly cartItemService: CartItemService) {}
+export class ComponentController {
+  constructor(private readonly componentService: ComponentService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createCartItemDto: CreateCartItemDto) {
-    return this.cartItemService.create(createCartItemDto);
+  create(@Body() createComponentDto: CreateComponentDto) {
+    return this.componentService.create(createComponentDto);
   }
 
   @Throttle(30, 60)
   @Get()
   @HttpCode(HttpStatus.OK)
-  findAll(@Query(new ValidationPipe()) query: ListCartItemQueryDto) {
-    return this.cartItemService.listCartItems(query);
+  findAll(@Query(new ValidationPipe()) query: ListComponentQueryDto) {
+    return this.componentService.listComponents(query);
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   findOne(@ParamUUID('id') id: string) {
-    return this.cartItemService.findOne(id);
+    return this.componentService.findOne(id);
   }
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   update(
     @ParamUUID('id') id: string,
-    @Body() updateCartItemDto: UpdateCartItemDto,
+    @Body() updateComponentDto: UpdateComponentDto,
   ) {
-    return this.cartItemService.update(id, updateCartItemDto);
+    return this.componentService.update(id, updateComponentDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   remove(@ParamUUID('id') id: string) {
-    return this.cartItemService.delete(id);
+    return this.componentService.delete(id);
   }
 }

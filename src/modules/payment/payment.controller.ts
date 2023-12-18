@@ -10,6 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
+import { InitPaymentDto } from './dto/init-payment.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RoleGuard } from '../role/role.guard';
 import { Roles } from '../role/role.decorator';
@@ -60,25 +61,71 @@ export class PaymentController {
   @Post('init')
   @Roles(RoleEnum.CLIENT)
   @HttpCode(HttpStatus.CREATED)
-  async initPayment(@Request() { user }: { user: User }) {
+  async initPayment(
+    @Request() { user }: { user: User },
+    @Body() initPaymentDto: InitPaymentDto,
+  ) {
     const price = 10;
-    // const incompleteOrder = await this.orderService.getOrder()
-
-    // if (incompleteOrder) {
-    //   const paymentId = incompleteOrder?.transactions[0]?.paymentId;
-    //
-    //   const paymentUrl = this.configService.get<string>('payment.paymentUrl');
-    //   const language = PaymentLanguage.RUSSIAN;
-    //
-    //   const url = `${paymentUrl}?id=${paymentId}&lang=${language}`;
-    //   return { url, orderId: incompleteOrder.id };
-    // }
-
     let transaction: Transaction;
     let order: Order;
     const providerOrderId =
       await this.transactionService.generateProviderOrderId();
 
+    // const incompleteOrder = orders.find(
+    //   (order: Order) => order.status === OrderStatus.PENDING,
+    //   // !isDateExpired(order.createdAt, 10) && // uncomment if you want to filter recent ones
+    // );
+
+    // console.log('incompleteOrder', incompleteOrder);
+    // if (incompleteOrder) {
+    //   const lastPendingTransaction = incompleteOrder.transactions.find(
+    //     (transaction: Transaction) =>
+    //       transaction.status === TransactionStatus.PENDING &&
+    //       transaction.paymentId,
+    //   );
+    //   console.log('lastPendingTransaction', lastPendingTransaction);
+    //   const paymentDetails = await this.paymentService.getPaymentDetails(
+    //     lastPendingTransaction?.paymentId,
+    //   );
+    //
+    //   if (
+    //     paymentDetails.OrderStatus === PaymentOrderStatus.PAYMENT_AUTOAUTHORIZED
+    //   ) {
+    //     throw new BadRequest('payment still pending, try again.');
+    //   }
+    //
+    //   await this.entityManager.transaction(
+    //     async (transactionalEntityManager) => {
+    //       if (paymentDetails.ResponseCode !== PaymentResponseCode.APPROVED) {
+    //         await transactionalEntityManager.save(Transaction, {
+    //           ...lastPendingTransaction,
+    //           details: paymentDetails,
+    //           status: TransactionStatus.FAILED,
+    //         });
+    //
+    //         // creating a new transaction for existing order
+    //         transaction = transactionalEntityManager.create(Transaction, {
+    //           status: TransactionStatus.PENDING,
+    //           type: TransactionType.RETRY,
+    //           providerOrderId,
+    //           amount: price,
+    //           user,
+    //         });
+    //         await transactionalEntityManager.save(Transaction, transaction);
+    //
+    //         order = await transactionalEntityManager.save(Order, {
+    //           ...incompleteOrder,
+    //           transactions: [...incompleteOrder.transactions, transaction],
+    //         });
+    //       } else {
+    //         return {
+    //           orderId: order.id,
+    //           message: 'Payment Succeeded, Create a new Order Process',
+    //         };
+    //       }
+    //     },
+    //   );
+    // } else {
     await this.entityManager.transaction(async (transactionalEntityManager) => {
       // creating initial order and transaction before payment init
       transaction = transactionalEntityManager.create(Transaction, {
@@ -98,6 +145,7 @@ export class PaymentController {
       });
       await transactionalEntityManager.save(Order, order);
     });
+    // }
 
     const initPaymentResponse = await this.paymentService.initPayment({
       OrderID: providerOrderId,
@@ -112,21 +160,21 @@ export class PaymentController {
     if (!url) {
       return {
         orderId: order.id,
-        message: 'Payment Failed, please retry.',
+        message: 'Payment Failed, please try again.',
       };
     }
 
     return { url, orderId: order.id };
   }
 
-  @Roles(RoleEnum.CLIENT)
   @Post('retry')
+  @Roles(RoleEnum.CLIENT)
   @HttpCode(HttpStatus.CREATED)
   async retryPayment(
     @Request() { user }: { user: User },
     @Body() retryPaymentDto: RetryPaymentDto,
   ) {
-    const { orderId, price } = retryPaymentDto;
+    const { orderId } = retryPaymentDto;
     let order = await this.orderService.getOrder(orderId);
     if (!order) {
       throw new BadRequest('order_not_found');
@@ -147,7 +195,7 @@ export class PaymentController {
         status: TransactionStatus.PENDING,
         type: TransactionType.RETRY,
         providerOrderId,
-        amount: price,
+        amount: order.price,
         user,
       });
       await transactionalEntityManager.save(Transaction, transaction);
@@ -161,7 +209,7 @@ export class PaymentController {
 
     const initPaymentResponse = await this.paymentService.initPayment({
       OrderID: providerOrderId,
-      Amount: price,
+      Amount: order.price,
     });
 
     const url = await this.paymentService.handlePaymentInit(

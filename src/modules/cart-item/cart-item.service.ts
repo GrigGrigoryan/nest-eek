@@ -1,26 +1,54 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { BaseService } from '../base/base.service';
+import { Base } from '../base/base.entity';
+import { NotFound } from '../../errors/NotFound';
+import { ListCartItemQueryDto } from './dto/list-cart-item.query.dto';
 import { CreateCartItemDto } from './dto/create-cart-item.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
+import { CartItem } from './cart-item.entity';
 
 @Injectable()
 export class CartItemService {
-  create(createCartItemDto: CreateCartItemDto) {
-    return 'This action adds a new cartItem';
+  constructor(
+    @InjectRepository(CartItem)
+    private readonly cartItemRepository: Repository<CartItem>,
+    private readonly baseService: BaseService,
+  ) {}
+
+  async create(createCartItemDto: CreateCartItemDto): Promise<CartItem> {
+    return this.cartItemRepository.save(
+      this.cartItemRepository.create(createCartItemDto),
+    );
   }
 
-  findAll() {
-    return `This action returns all cartItem`;
+  listCartItems(
+    query: ListCartItemQueryDto,
+  ): Promise<{ result: Base[]; count: number }> {
+    return this.baseService.queryEntity(this.cartItemRepository, query);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} cartItem`;
+  async findOne(id: CartItem['id']) {
+    const result = await this.cartItemRepository.findOneBy({ id });
+    if (!result) {
+      throw new NotFound('cart_item_not_found');
+    }
+    return result;
   }
 
-  update(id: number, updateCartItemDto: UpdateCartItemDto) {
-    return `This action updates a #${id} cartItem`;
+  async update(
+    id: CartItem['id'],
+    updateCartItemDto: UpdateCartItemDto,
+  ): Promise<CartItem> {
+    const existingCartItem: CartItem = await this.findOne(id);
+
+    Object.assign(existingCartItem, updateCartItemDto);
+    return this.cartItemRepository.save(existingCartItem);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cartItem`;
+  async delete(id: CartItem['id']): Promise<CartItem> {
+    const cartItem = await this.findOne(id);
+    return this.cartItemRepository.softRemove(cartItem);
   }
 }

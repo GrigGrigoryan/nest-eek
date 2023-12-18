@@ -3,19 +3,17 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Request,
+  Query,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RoleGuard } from '../role/role.guard';
-import { ConfigService } from '@nestjs/config';
-import { Roles } from '../role/role.decorator';
-import { RoleEnum } from '../role/role.enum';
 import { OrderService } from './order.service';
-import { Forbidden } from '../../errors/Forbidden';
 import { JwtAccessGuard } from '../auth/guards/jwt-access.guard';
-import { User } from '../user/entities/user.entity';
 import { ParamUUID } from '../../decorators/ParamUUID';
+import { Throttle } from '@nestjs/throttler';
+import { ListOrderQueryDto } from './dto/list-order.query.dto';
 
 @ApiBearerAuth()
 @ApiTags('Order')
@@ -24,27 +22,18 @@ import { ParamUUID } from '../../decorators/ParamUUID';
   path: 'order',
 })
 export class OrderController {
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly orderService: OrderService,
-  ) {}
+  constructor(private readonly orderService: OrderService) {}
+
+  @Throttle(30, 60)
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  findAll(@Query(new ValidationPipe()) query: ListOrderQueryDto) {
+    return this.orderService.listOrders(query);
+  }
 
   @Get(':id')
-  @Roles(RoleEnum.CLIENT)
   @HttpCode(HttpStatus.OK)
-  async getOrder(
-    @Request() { user }: { user: User },
-    @ParamUUID('id') id: string,
-  ) {
-    const order = await this.orderService.findOne({
-      where: { id },
-      relations: ['user'],
-    });
-
-    if (order.user?.id !== user.id) {
-      throw new Forbidden('order_no_access');
-    }
-
-    return order;
+  findOne(@ParamUUID('id') id: string) {
+    return this.orderService.findOne(id);
   }
 }

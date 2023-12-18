@@ -1,27 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Order } from './order.entity';
 import { NotFound } from '../../errors/NotFound';
 import { BadRequest } from '../../errors/BadRequest';
+import { ListModelQueryDto } from '../model/dto/list-model.query.dto';
+import { Base } from '../base/base.entity';
+import { BaseService } from '../base/base.service';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
+    private readonly baseService: BaseService,
   ) {}
 
   async count(): Promise<number> {
     return this.orderRepository.count();
   }
 
-  async findOne(options: FindOneOptions<Order>): Promise<Order | null> {
-    const result = await this.orderRepository.findOne(options);
+  async findOne(id: Order['id']) {
+    const result = await this.orderRepository.findOneBy({ id });
     if (!result) {
       throw new NotFound('order_not_found');
     }
     return result;
+  }
+
+  listOrders(
+    query: ListModelQueryDto,
+  ): Promise<{ result: Base[]; count: number }> {
+    return this.baseService.queryEntity(this.orderRepository, query);
   }
 
   async getOrder(id: Order['id']): Promise<Order | null> {
@@ -29,9 +39,6 @@ export class OrderService {
       .createQueryBuilder('order')
       .leftJoinAndSelect('order.user', 'user')
       .leftJoinAndSelect('order.transactions', 'transaction')
-      .leftJoinAndSelect('order.flowState', 'flowState')
-      .leftJoinAndSelect('flowState.orderProcess', 'orderProcess')
-      .leftJoinAndSelect('flowState.payable', 'payable')
       .where('order.id = :id', { id })
       .orderBy('transaction.providerOrderId', 'DESC')
       .getOne();

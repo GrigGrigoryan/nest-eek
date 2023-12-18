@@ -11,53 +11,53 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
-import { CartService } from './cart.service';
-import { CreateCartDto } from './dto/create-cart.dto';
-import { UpdateCartDto } from './dto/update-cart.dto';
+import { ModelService } from './model.service';
+import { CreateModelDto } from './dto/create-model.dto';
+import { UpdateModelDto } from './dto/update-model.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAccessGuard } from '../auth/guards/jwt-access.guard';
 import { RoleGuard } from '../role/role.guard';
 import { Throttle } from '@nestjs/throttler';
 import { ParamUUID } from '../../decorators/ParamUUID';
-import { ListCartQueryDto } from './dto/list-cart.query.dto';
+import { ListModelQueryDto } from './dto/list-model.query.dto';
 
 @ApiBearerAuth()
-@ApiTags('Cart')
+@ApiTags('Model')
 @UseGuards(JwtAccessGuard, RoleGuard)
 @Controller({
-  path: 'cart',
+  path: 'model',
 })
-export class CartController {
-  constructor(private readonly cartService: CartService) {}
+export class ModelController {
+  constructor(private readonly modelService: ModelService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createCartDto: CreateCartDto) {
-    return this.cartService.create(createCartDto);
+  create(@Body() createModelDto: CreateModelDto) {
+    return this.modelService.create(createModelDto);
   }
 
   @Throttle(30, 60)
   @Get()
   @HttpCode(HttpStatus.OK)
-  findAll(@Query(new ValidationPipe()) query: ListCartQueryDto) {
-    return this.cartService.listCarts(query);
+  findAll(@Query(new ValidationPipe()) query: ListModelQueryDto) {
+    return this.modelService.listModels(query);
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   findOne(@ParamUUID('id') id: string) {
-    return this.cartService.findOne(id);
+    return this.modelService.findOne(id);
   }
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  update(@ParamUUID('id') id: string, @Body() updateCartDto: UpdateCartDto) {
-    return this.cartService.update(id, updateCartDto);
+  update(@ParamUUID('id') id: string, @Body() updateModelDto: UpdateModelDto) {
+    return this.modelService.update(id, updateModelDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
   remove(@ParamUUID('id') id: string) {
-    return this.cartService.delete(id);
+    return this.modelService.delete(id);
   }
 }

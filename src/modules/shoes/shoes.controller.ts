@@ -4,9 +4,12 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Delete,
   UseGuards,
+  HttpCode,
+  HttpStatus,
+  Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ShoesService } from './shoes.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -14,6 +17,9 @@ import { JwtAccessGuard } from '../auth/guards/jwt-access.guard';
 import { RoleGuard } from '../role/role.guard';
 import { CreateShoesDto } from './dto/create-shoes.dto';
 import { UpdateShoesDto } from './dto/update-shoes.dto';
+import { Throttle } from '@nestjs/throttler';
+import { ParamUUID } from '../../decorators/ParamUUID';
+import { ListShoesQueryDto } from './dto/list-shoes.query.dto';
 
 @ApiBearerAuth()
 @ApiTags('Shoes')
@@ -25,27 +31,33 @@ export class ShoesController {
   constructor(private readonly shoesService: ShoesService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   create(@Body() createShoesDto: CreateShoesDto) {
     return this.shoesService.create(createShoesDto);
   }
 
+  @Throttle(30, 60)
   @Get()
-  findAll() {
-    return this.shoesService.findAll();
+  @HttpCode(HttpStatus.OK)
+  findAll(@Query(new ValidationPipe()) query: ListShoesQueryDto) {
+    return this.shoesService.listShoes(query);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.shoesService.findOne(+id);
+  @HttpCode(HttpStatus.OK)
+  findOne(@ParamUUID('id') id: string) {
+    return this.shoesService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateShoesDto: UpdateShoesDto) {
-    return this.shoesService.update(+id, updateShoesDto);
+  @HttpCode(HttpStatus.OK)
+  update(@ParamUUID('id') id: string, @Body() updateShoesDto: UpdateShoesDto) {
+    return this.shoesService.update(id, updateShoesDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.shoesService.remove(+id);
+  @HttpCode(HttpStatus.OK)
+  remove(@ParamUUID('id') id: string) {
+    return this.shoesService.delete(id);
   }
 }

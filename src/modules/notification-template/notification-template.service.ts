@@ -21,6 +21,17 @@ export class NotificationTemplateService {
     return this.notificationTemplateRepository.count();
   }
 
+  async findOneBy(
+    where: EntityCondition<NotificationTemplate>,
+  ): Promise<NotificationTemplate> {
+    const result = await this.notificationTemplateRepository.findOneBy(where);
+
+    if (!result) {
+      throw new NotFound('notification_template_not_found');
+    }
+    return result;
+  }
+
   listNotificationTemplates(): Promise<NotificationTemplate[]> {
     return this.notificationTemplateRepository.find();
   }
@@ -77,17 +88,6 @@ export class NotificationTemplateService {
         html,
       });
     }
-  }
-
-  async findOneBy(
-    where: EntityCondition<NotificationTemplate>,
-  ): Promise<NotificationTemplate> {
-    const result = await this.notificationTemplateRepository.findOneBy(where);
-
-    if (!result) {
-      throw new NotFound('notification_template_not_found');
-    }
-    return result;
   }
 
   generateNotificationContent(
