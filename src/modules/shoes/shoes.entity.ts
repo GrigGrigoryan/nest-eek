@@ -3,6 +3,7 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { CartItem } from '../cart-item/cart-item.entity';
 import { Category } from '../category/category.entity';
 import { Image } from '../image/image.entity';
+import { Model } from '../model/entities/model.entity';
 
 @Entity('shoes')
 export class Shoes extends Base {
@@ -11,9 +12,6 @@ export class Shoes extends Base {
 
   @Column()
   color: string;
-
-  @Column()
-  material: string;
 
   @Column()
   gender: string;
@@ -29,6 +27,9 @@ export class Shoes extends Base {
 
   @Column()
   price: string;
+
+  @ManyToOne(() => Model, (model) => model.shoes)
+  model: Model;
 
   @OneToMany(() => Image, (image) => image.shoes)
   images: Image[];

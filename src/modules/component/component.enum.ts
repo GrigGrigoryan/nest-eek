@@ -1,0 +1,18 @@
+export enum ComponentType {
+  UPPER = 'upper',
+  INSOLE = 'insole',
+  OUTSOLE = 'outsole',
+  MIDSOLE = 'midsole',
+  HEEL = 'heel',
+  TOE_BOX = 'toe box',
+  EYELETS = 'eyelets',
+  LACES = 'laces',
+  TONGUE = 'tongue',
+  COLLAR = 'collar',
+  SOLE = 'sole',
+  SHANK = 'shank',
+  QUARTER_PANEL = 'quarter panel',
+  VAMP = 'vamp',
+  COUNTER = 'counter',
+  SOCKLINER = 'sockliner',
+}

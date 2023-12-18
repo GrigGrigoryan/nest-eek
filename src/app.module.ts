@@ -37,6 +37,9 @@ import { CartItemModule } from './modules/cart-item/cart-item.module';
 import { ImageModule } from './modules/image/image.module';
 import throttlerConfig from './config/throttler.config';
 import { AccessoryModule } from './modules/accessory/accessory.module';
+import { MaterialModule } from './modules/material/material.module';
+import { ComponentModule } from './modules/component/component.module';
+import { ModelModule } from './modules/model/model.module';
 
 @Module({
   imports: [
@@ -90,6 +93,9 @@ import { AccessoryModule } from './modules/accessory/accessory.module';
     CartModule,
     CartItemModule,
     ImageModule,
+    MaterialModule,
+    ComponentModule,
+    ModelModule,
   ],
   providers: [
     // {

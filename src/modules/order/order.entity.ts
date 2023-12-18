@@ -3,6 +3,7 @@ import { User } from '../user/entities/user.entity';
 import { Transaction } from '../transaction/transaction.entity';
 import { Base } from '../base/base.entity';
 import { OrderStatus } from './order.enum';
+import { Cart } from '../cart/cart.entity';
 
 @Entity('order')
 export class Order extends Base {
@@ -15,6 +16,9 @@ export class Order extends Base {
 
   @Column({ nullable: false })
   price: number;
+
+  @ManyToOne(() => Cart, (cart) => cart.orders)
+  cart: Cart;
 
   @ManyToOne(() => User, (user) => user.orders)
   user: User;

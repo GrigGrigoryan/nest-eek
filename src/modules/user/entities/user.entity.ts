@@ -24,6 +24,7 @@ export class User extends Base {
   @Expose({ groups: ['me', 'admin'] })
   email: string | null;
 
+  //pin, outer material, innerMaterial
   @Column({ unique: true, nullable: true })
   @Expose({ groups: ['me', 'admin'] })
   phone: string | null;

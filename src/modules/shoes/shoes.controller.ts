@@ -16,7 +16,7 @@ import { CreateShoesDto } from './dto/create-shoes.dto';
 import { UpdateShoesDto } from './dto/update-shoes.dto';
 
 @ApiBearerAuth()
-@ApiTags('shoes')
+@ApiTags('Shoes')
 @UseGuards(JwtAccessGuard, RoleGuard)
 @Controller({
   path: 'shoes',

@@ -15,7 +15,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAccessGuard } from '../auth/guards/jwt-access.guard';
 import { RoleGuard } from '../role/role.guard';
 
-@Controller('cart-item')
 @ApiBearerAuth()
 @ApiTags('Cart Item')
 @UseGuards(JwtAccessGuard, RoleGuard)
