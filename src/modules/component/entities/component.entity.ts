@@ -1,18 +1,17 @@
 import { Base } from '../../base/base.entity';
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
-import { MaterialType } from '../../material/material.enum';
 import { Image } from '../../image/image.entity';
 import { Material } from '../../material/entities/material.entity';
-import { ComponentType } from '../component.enum';
 import { Model } from '../../model/entities/model.entity';
+import { ComponentType } from './component-type.entity';
 
 @Entity('component')
 export class Component extends Base {
-  @Column('enum', { nullable: false, enum: MaterialType })
-  type: ComponentType;
-
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   name: string;
+
+  @ManyToOne(() => ComponentType, (componentType) => componentType.components)
+  type: ComponentType;
 
   @ManyToOne(() => Material, (material) => material.components)
   material: Material;

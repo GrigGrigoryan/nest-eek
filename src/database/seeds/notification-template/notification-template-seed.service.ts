@@ -16,10 +16,10 @@ export class NotificationTemplateSeedService {
   ) {}
 
   async run() {
-    const countNotificationTemplateServices =
+    const countNotificationTemplates =
       await this.notificationTemplateService.count();
-    if (countNotificationTemplateServices === 0) {
-      const notificationTemplateServices = [
+    if (countNotificationTemplates === 0) {
+      const notificationTemplates = [
         {
           action: NotificationAction.REGISTER_CONFIRM,
           type: NotificationType.EMAIL,
@@ -65,9 +65,7 @@ export class NotificationTemplateSeedService {
         },
       ] as unknown as NotificationTemplate[];
 
-      await this.notificationTemplateService.bulkCreate(
-        notificationTemplateServices,
-      );
+      await this.notificationTemplateService.bulkCreate(notificationTemplates);
       this.logger.verbose('Notification template seeded successfully');
     }
   }

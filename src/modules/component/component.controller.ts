@@ -11,7 +11,7 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
-import { ComponentService } from './component.service';
+import { ComponentService } from './services/component.service';
 import { CreateComponentDto } from './dto/create-component.dto';
 import { UpdateComponentDto } from './dto/update-component.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';

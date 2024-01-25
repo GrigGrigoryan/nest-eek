@@ -11,7 +11,7 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
-import { MaterialService } from './material.service';
+import { MaterialService } from './services/material.service';
 import { CreateMaterialDto } from './dto/create-material.dto';
 import { UpdateMaterialDto } from './dto/update-material.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';

@@ -22,7 +22,7 @@ import { ListCartItemQueryDto } from './dto/list-cart-item.query.dto';
 import { CartItemService } from './cart-item.service';
 
 @ApiBearerAuth()
-@ApiTags('CartItem Item')
+@ApiTags('Cart Item')
 @UseGuards(JwtAccessGuard, RoleGuard)
 @Controller({
   path: 'cart-item',

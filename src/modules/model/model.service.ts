@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateModelDto } from './dto/create-model.dto';
 import { UpdateModelDto } from './dto/update-model.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,24 +12,24 @@ import { Model } from './entities/model.entity';
 export class ModelService {
   constructor(
     @InjectRepository(Model)
-    private readonly imageRepository: Repository<Model>,
+    private readonly modelRepository: Repository<Model>,
     private readonly baseService: BaseService,
   ) {}
 
-  async create(createModelDto: CreateModelDto): Promise<Model> {
-    return this.imageRepository.save(
-      this.imageRepository.create(createModelDto),
+  async create(createModelDto): Promise<Model[]> {
+    return this.modelRepository.save(
+      this.modelRepository.create(createModelDto),
     );
   }
 
   listModels(
     query: ListModelQueryDto,
   ): Promise<{ result: Base[]; count: number }> {
-    return this.baseService.queryEntity(this.imageRepository, query);
+    return this.baseService.queryEntity(this.modelRepository, query);
   }
 
   async findOne(id: Model['id']) {
-    const result = await this.imageRepository.findOneBy({ id });
+    const result = await this.modelRepository.findOneBy({ id });
     if (!result) {
       throw new NotFound('image_not_found');
     }
@@ -44,11 +43,11 @@ export class ModelService {
     const existingModel: Model = await this.findOne(id);
 
     Object.assign(existingModel, updateModelDto);
-    return this.imageRepository.save(existingModel);
+    return this.modelRepository.save(existingModel);
   }
 
   async delete(id: Model['id']): Promise<Model> {
     const image = await this.findOne(id);
-    return this.imageRepository.softRemove(image);
+    return this.modelRepository.softRemove(image);
   }
 }

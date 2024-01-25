@@ -1,4 +1,4 @@
-export enum ComponentType {
+export enum ComponentTypeEnum {
   UPPER = 'upper',
   INSOLE = 'insole',
   OUTSOLE = 'outsole',

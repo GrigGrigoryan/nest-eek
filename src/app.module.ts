@@ -40,6 +40,10 @@ import { AccessoryModule } from './modules/accessory/accessory.module';
 import { MaterialModule } from './modules/material/material.module';
 import { ComponentModule } from './modules/component/component.module';
 import { ModelModule } from './modules/model/model.module';
+import { MaterialTypeSeedService } from './database/seeds/material/material-type-seed.service';
+import { MaterialTypeSeedModule } from './database/seeds/material/material-type-seed.module';
+import { ComponentTypeSeedService } from './database/seeds/component/component-type-seed.service';
+import { ComponentTypeSeedModule } from './database/seeds/component/component-type-seed.module';
 
 @Module({
   imports: [
@@ -94,7 +98,9 @@ import { ModelModule } from './modules/model/model.module';
     CartItemModule,
     ImageModule,
     MaterialModule,
+    MaterialTypeSeedModule,
     ComponentModule,
+    ComponentTypeSeedModule,
     ModelModule,
   ],
   providers: [
@@ -118,11 +124,15 @@ export class AppModule implements OnModuleInit {
     private readonly roleSeedService: RoleSeedService,
     private readonly userSeedService: UserSeedService,
     private readonly notificationTemplateSeedService: NotificationTemplateSeedService,
+    private readonly materialTypeSeedService: MaterialTypeSeedService,
+    private readonly componentTypeSeedService: ComponentTypeSeedService,
   ) {}
 
   async onModuleInit() {
     await this.roleSeedService.run();
     await this.userSeedService.run();
     await this.notificationTemplateSeedService.run();
+    await this.materialTypeSeedService.run();
+    await this.componentTypeSeedService.run();
   }
 }

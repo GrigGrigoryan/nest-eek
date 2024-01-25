@@ -1,4 +1,4 @@
-export enum MaterialType {
+export enum MaterialTypeEnum {
   RUBBER = 'rubber',
   FOAM = 'foam',
   WOOL = 'wool',

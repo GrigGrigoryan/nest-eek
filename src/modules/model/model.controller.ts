@@ -33,7 +33,8 @@ export class ModelController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createModelDto: CreateModelDto) {
-    return this.modelService.create(createModelDto);
+    const { componentsIds } = createModelDto;
+    return this.modelService.create({});
   }
 
   @Throttle(30, 60)

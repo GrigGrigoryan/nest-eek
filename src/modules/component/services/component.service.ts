@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { CreateComponentDto } from './dto/create-component.dto';
-import { UpdateComponentDto } from './dto/update-component.dto';
+import { CreateComponentDto } from '../dto/create-component.dto';
+import { UpdateComponentDto } from '../dto/update-component.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BaseService } from '../base/base.service';
-import { NotFound } from '../../errors/NotFound';
-import { Component } from './entities/component.entity';
-import { Base } from '../base/base.entity';
-import { ListComponentQueryDto } from './dto/list-component.query.dto';
+import { BaseService } from '../../base/base.service';
+import { NotFound } from '../../../errors/NotFound';
+import { Component } from '../entities/component.entity';
+import { Base } from '../../base/base.entity';
+import { ListComponentQueryDto } from '../dto/list-component.query.dto';
 
 @Injectable()
 export class ComponentService {

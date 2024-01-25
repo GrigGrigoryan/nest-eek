@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMaterialDto } from './dto/create-material.dto';
-import { UpdateMaterialDto } from './dto/update-material.dto';
+import { CreateMaterialDto } from '../dto/create-material.dto';
+import { UpdateMaterialDto } from '../dto/update-material.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BaseService } from '../base/base.service';
-import { ListMaterialQueryDto } from './dto/list-material.query.dto';
-import { Base } from '../base/base.entity';
-import { NotFound } from '../../errors/NotFound';
-import { Material } from './entities/material.entity';
+import { BaseService } from '../../base/base.service';
+import { ListMaterialQueryDto } from '../dto/list-material.query.dto';
+import { Base } from '../../base/base.entity';
+import { NotFound } from '../../../errors/NotFound';
+import { Material } from '../entities/material.entity';
 
 @Injectable()
 export class MaterialService {
@@ -21,6 +21,10 @@ export class MaterialService {
     return this.materialRepository.save(
       this.materialRepository.create(createMaterialDto),
     );
+  }
+
+  async count(): Promise<number> {
+    return this.materialRepository.count();
   }
 
   listMaterials(
@@ -45,6 +49,15 @@ export class MaterialService {
 
     Object.assign(existingMaterial, updateMaterialDto);
     return this.materialRepository.save(existingMaterial);
+  }
+
+  async bulkCreate(materials: Material[]): Promise<void> {
+    await this.materialRepository
+      .createQueryBuilder()
+      .insert()
+      .into(Material)
+      .values(materials)
+      .execute();
   }
 
   async delete(id: Material['id']): Promise<Material> {
