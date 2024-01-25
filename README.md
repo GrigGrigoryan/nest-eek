@@ -24,7 +24,8 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Rest API for Baby Shoes website.
+Fully customizable shoes models, materials and components.
 
 ## Installation
 
